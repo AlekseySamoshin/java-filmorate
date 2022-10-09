@@ -3,12 +3,9 @@ package ru.yandex.practicum.filmorate.controllers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.WrongFilmDataException;
-import ru.yandex.practicum.filmorate.exceptions.WrongUserDataException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
