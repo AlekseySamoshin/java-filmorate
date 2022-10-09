@@ -51,10 +51,10 @@ public class UserController {
 
     public void validate(User user) throws WrongUserDataException {
         StringBuilder message = new StringBuilder();
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) message.append("Не указан email! ");
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) message.append("Не указан email! ");
         if (user.getLogin().isBlank()) message.append("Не указан логин! ");
         if (user.getBirthday().isAfter(LocalDate.now())) message.append("Некорректная дата рождения! ");
-        if (message.length() > 0) {
+        if (!message.toString().isBlank()) {
             log.warn("Ошибка валидации данных пользователя: " + message.toString());
             throw new WrongUserDataException(message.toString());
         }

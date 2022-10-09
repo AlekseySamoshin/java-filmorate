@@ -54,9 +54,11 @@ public class FilmController {
         StringBuilder message = new StringBuilder();
         if (film.getName().isBlank()) message.append("Не указано название! ");
         if (film.getDescription().length() > 200) message.append("Слишком длинное описание! ");
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) message.append("Некорректрая дата выхода ");
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) message.append("Некорректрая дата выхода! ");
         if (film.getDuration() < 0) message.append("Длительность фильма не может быть меньше 0! ");
-        log.warn("Ошибка валидации данных фильма: " + message.toString());
-        if (message.length() > 0) throw new WrongUserDataException(message.toString());
+        if (!message.toString().isBlank()) {
+            log.warn("Ошибка валидации данных фильма: " + message.toString());
+            throw new WrongFilmDataException(message.toString());
+        }
     }
 }
