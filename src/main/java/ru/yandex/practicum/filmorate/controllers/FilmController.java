@@ -2,10 +2,8 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.WrongFilmDataException;
-import ru.yandex.practicum.filmorate.exceptions.WrongUserDataException;
+import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -33,7 +31,7 @@ public class FilmController {
         validate(film);
         if (film.getId() == null || !films.containsKey(film.getId())) {
             log.warn("Ошибка обновления данных фильма: неверный id" + film.toString());
-            throw new WrongFilmDataException("Неверный id");
+            throw new WrongDataException("Неверный id");
         }
         films.put(film.getId(), film);
         log.info("Обновлены данные фильма " + film.toString());
@@ -50,7 +48,7 @@ public class FilmController {
         return ++generatedId;
     }
 
-    public void validate(Film film) throws WrongFilmDataException {
+    private void validate(Film film) throws WrongDataException {
         StringBuilder message = new StringBuilder();
         if (film.getName().isBlank()) message.append("Не указано название! ");
         if (film.getDescription().length() > 200) message.append("Слишком длинное описание! ");
@@ -58,7 +56,7 @@ public class FilmController {
         if (film.getDuration() < 0) message.append("Длительность фильма не может быть меньше 0! ");
         if (!message.toString().isBlank()) {
             log.warn("Ошибка валидации данных фильма: " + message.toString());
-            throw new WrongFilmDataException(message.toString());
+            throw new WrongDataException(message.toString());
         }
     }
 }

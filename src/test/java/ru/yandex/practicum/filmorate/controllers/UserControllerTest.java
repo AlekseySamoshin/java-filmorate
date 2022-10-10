@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exceptions.WrongUserDataException;
+import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -48,7 +48,7 @@ class UserControllerTest {
         assertEquals(2, user2.getId(), "Пользователям присваивается неверный id");
         try {
             userController.addUser(wrongUser);
-        } catch (WrongUserDataException exception) {
+        } catch (WrongDataException exception) {
             assertEquals("Не указан email! Не указан логин! Некорректная дата рождения! ", exception.getMessage());
         }
     }
@@ -75,7 +75,7 @@ class UserControllerTest {
     void validate() {
         try {
             userController.addUser(wrongUser);
-        } catch (WrongUserDataException exception) {
+        } catch (WrongDataException exception) {
             assertEquals("Не указан email! Не указан логин! Некорректная дата рождения! ", exception.getMessage());
         }
     }

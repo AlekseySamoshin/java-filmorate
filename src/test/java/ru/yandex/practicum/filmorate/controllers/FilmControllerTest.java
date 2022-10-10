@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.filmorate.exceptions.WrongFilmDataException;
+import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
@@ -49,7 +49,7 @@ class FilmControllerTest {
         assertEquals(2, film2.getId(), "Фильмам присваивается неверный id");
         try {
             filmController.addFilm(wrongFilm);
-        } catch (WrongFilmDataException exception) {
+        } catch (WrongDataException exception) {
             assertEquals("Не указано название! Некорректрая дата выхода! Длительность фильма не может быть меньше 0! ", exception.getMessage());
         }
     }
@@ -81,8 +81,8 @@ class FilmControllerTest {
         }
         wrongFilm.setDescription(str.toString());
         try {
-            filmController.validate(wrongFilm);
-        } catch (WrongFilmDataException exception) {
+            filmController.addFilm(wrongFilm);
+        } catch (WrongDataException exception) {
             assertEquals("Не указано название! Слишком длинное описание! Некорректрая дата выхода! Длительность фильма не может быть меньше 0! ", exception.getMessage());
         }
     }
