@@ -1,9 +1,12 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -12,15 +15,19 @@ import java.util.HashMap;
 @RestController
 @Slf4j
 public class UserController {
-    private final HashMap<Integer, User> users = new HashMap<>();
-    private int generatedId;
+
+    UserStorage userStorage;
+
+    @Autowired
+    public UserController(UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     @PostMapping("/users")
     public User addUser(@RequestBody User user) {
         log.info("Получен запрос на добавление пользователя.");
         validate(user);
-        if (user.getId() == null) user.setId(generateId());
-        users.put(user.getId(), user);
+        user = userStorage.addUser(user);
         log.info("Добавлен пользователь " + user.toString());
         return user;
     }
@@ -29,11 +36,7 @@ public class UserController {
     public User updateUser(@RequestBody User user) {
         log.info("Получен запрос на обновление данных пользователя.");
         validate(user);
-        if (user.getId() == null || !users.containsKey(user.getId())) {
-            log.warn("Ошибка обновления пользователя: неверный id" + user.toString());
-            throw new WrongDataException("Неверный id");
-        }
-        users.put(user.getId(), user);
+        user = userStorage.updateUser(user);
         log.info("Обновлены данные пользователя " + user.toString());
         return user;
     }
@@ -41,11 +44,7 @@ public class UserController {
     @GetMapping("/users")
     public Collection<User> getUsers() {
         log.info("Получен запрос на получение списка пользователей");
-        return users.values();
-    }
-
-    private int generateId() {
-        return ++generatedId;
+        return userStorage.getUsers().values();
     }
 
     private void validate(User user) throws WrongDataException {

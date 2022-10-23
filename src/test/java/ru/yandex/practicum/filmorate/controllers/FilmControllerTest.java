@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ class FilmControllerTest {
 
     @BeforeEach
     void prepare() {
-        filmController = new FilmController();
+        filmController = new FilmController(new InMemoryFilmStorage());
         films = new HashMap<>();
         generatedId = 0;
         film1 = new Film();

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -12,15 +13,17 @@ import java.util.HashMap;
 @RestController
 @Slf4j
 public class FilmController {
-    private int generatedId;
-    private final HashMap<Integer, Film> films = new HashMap<Integer, Film>();
+    FilmStorage filmStorage;
+
+    public FilmController(FilmStorage filmStorage) {
+        this.filmStorage = filmStorage;
+    }
 
     @PostMapping("/films")
     public Film addFilm(@RequestBody Film film) {
         log.info("Получен запрос на добавление фильма.");
         validate(film);
-        if (film.getId() == null) film.setId(generateId());
-        films.put(film.getId(), film);
+        film = filmStorage.addFilm(film);
         log.info("Добавлен фильм " + film.toString());
         return film;
     }
@@ -29,11 +32,7 @@ public class FilmController {
     public Film updateFilm(@RequestBody Film film) {
         log.info("Получен запрос на добавление/обновление данных фильма.");
         validate(film);
-        if (film.getId() == null || !films.containsKey(film.getId())) {
-            log.warn("Ошибка обновления данных фильма: неверный id" + film.toString());
-            throw new WrongDataException("Неверный id");
-        }
-        films.put(film.getId(), film);
+        film = filmStorage.updateFilm(film);
         log.info("Обновлены данные фильма " + film.toString());
         return film;
     }
@@ -41,11 +40,7 @@ public class FilmController {
     @GetMapping("/films")
     public Collection<Film> getFilms(){
         log.info("Получен запрос на получение списка фильмов");
-        return films.values();
-    }
-
-    private int generateId() {
-        return ++generatedId;
+        return filmStorage.getFilms().values();
     }
 
     private void validate(Film film) throws WrongDataException {
