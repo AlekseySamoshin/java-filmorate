@@ -5,29 +5,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.services.UserService;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
 
 @RestController
 @Slf4j
 public class UserController {
 
-    UserStorage userStorage;
+    UserService userService;
 
     @Autowired
-    public UserController(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/users")
     public User addUser(@RequestBody User user) {
         log.info("Получен запрос на добавление пользователя.");
         validate(user);
-        user = userStorage.addUser(user);
+        user = userService.addUser(user);
         log.info("Добавлен пользователь " + user.toString());
         return user;
     }
@@ -36,7 +34,7 @@ public class UserController {
     public User updateUser(@RequestBody User user) {
         log.info("Получен запрос на обновление данных пользователя.");
         validate(user);
-        user = userStorage.updateUser(user);
+        user = userService.updateUser(user);
         log.info("Обновлены данные пользователя " + user.toString());
         return user;
     }
@@ -44,19 +42,46 @@ public class UserController {
     @GetMapping("/users")
     public Collection<User> getUsers() {
         log.info("Получен запрос на получение списка пользователей");
-        return userStorage.getUsers().values();
+        return userService.getUsers().values();
+    }
+
+    @GetMapping("/users/{id}")
+    public User getUser(@PathVariable int id) {
+        log.info("Получен запрос на получение пользователя");
+        return userService.getUserById(id);
+    }
+
+    @GetMapping("/users/{id}/friends")
+    public Collection<User> getFriends(@PathVariable int id) {
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    public Collection<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.getCommonFriends(id, otherId);
+    }
+
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.deleteFriend(id, friendId);
     }
 
     private void validate(User user) throws WrongDataException {
         StringBuilder message = new StringBuilder();
-        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@")) message.append("Не указан email! ");
+        if (user.getEmail() == null || user.getEmail().isBlank() || !user.getEmail().contains("@"))
+            message.append("Не указан email! ");
         if (user.getLogin().isBlank()) message.append("Не указан логин! ");
         if (user.getBirthday().isAfter(LocalDate.now())) message.append("Некорректная дата рождения! ");
         if (!message.toString().isBlank()) {
             log.warn("Ошибка валидации данных пользователя: " + message.toString());
             throw new WrongDataException(message.toString());
         }
-        if (user.getName() == null) user.setName(user.getLogin());
+        if (user.getName().isBlank()) user.setName(user.getLogin());
     }
 }
 
