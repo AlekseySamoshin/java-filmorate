@@ -43,7 +43,7 @@ public class FilmController {
     @PostMapping("/films")
     public Film addFilm(@RequestBody Film film) {
         log.info("Получен запрос на добавление фильма.");
-        validate(film);
+        filmService.validate(film);
         film = filmService.addFilm(film);
         log.info("Добавлен фильм " + film.toString());
         return film;
@@ -55,7 +55,7 @@ public class FilmController {
         if (!filmService.getFilms().containsKey(film.getId())) {
             throw new NotFoundException("Фильм с id " + film.getId() + " не найден.");
         }
-        validate(film);
+        filmService.validate(film);
         film = filmService.updateFilm(film);
         log.info("Обновлены данные фильма " + film.toString());
         return film;
@@ -69,17 +69,5 @@ public class FilmController {
     @DeleteMapping("/films/{id}/like/{userId}")
     public void removeLike(@PathVariable int id, @PathVariable int userId) {
         filmService.removeLike(id, userId);
-    }
-
-    private void validate(Film film) throws WrongDataException {
-        StringBuilder message = new StringBuilder();
-        if (film.getName().isBlank()) message.append("Не указано название! ");
-        if (film.getDescription().length() > 200) message.append("Слишком длинное описание! ");
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) message.append("Некорректрая дата выхода! ");
-        if (film.getDuration() < 0) message.append("Длительность фильма не может быть меньше 0! ");
-        if (!message.toString().isBlank()) {
-            log.warn("Ошибка валидации данных фильма: " + message.toString());
-            throw new WrongDataException(message.toString());
-        }
     }
 }
