@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final static int MOST_POPULAR_DEFAULT_COUNT = 10;
-    private FilmStorage filmStorage;
-    private UserService userService;
+    private final FilmStorage filmStorage;
+    private final UserService userService;
 
     @Autowired
     public FilmService(FilmStorage filmStorage, UserService userService) {
@@ -29,10 +29,15 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
+        validate(film);
         return filmStorage.addFilm(film);
     }
 
     public Film updateFilm(Film film) {
+        if (!getFilms().containsKey(film.getId())) {
+            throw new NotFoundException("Фильм с id " + film.getId() + " не найден.");
+        }
+        validate(film);
         return filmStorage.updateFilm(film);
     }
 

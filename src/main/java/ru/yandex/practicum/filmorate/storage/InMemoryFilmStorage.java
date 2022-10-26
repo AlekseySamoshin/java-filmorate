@@ -33,6 +33,7 @@ public class InMemoryFilmStorage implements FilmStorage{
             throw new WrongDataException("Неверный id");
         }
         films.put(film.getId(), film);
+        log.info("Обновлены данные фильма " + film.toString());
         return film;
     }
 
