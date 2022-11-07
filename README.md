@@ -17,6 +17,8 @@
 
 [![Схема базы данных](https://github.com/AlekseySamoshin/java-filmorate/blob/main/Filmorate_database%20-%20Frame%201.jpg "Схема базы данных")](https://github.com/AlekseySamoshin/java-filmorate/blob/main/Filmorate_database%20-%20Frame%201.jpg "Схема базы данных")
 
+------------
+
 #### Примеры HTTP-запросов к серверу:
 - POST http://localhost:8080/users - создание пользователя с передачей объекта в теле запроса
 - GET http://localhost:8080/users - получение списка всех пользователей
