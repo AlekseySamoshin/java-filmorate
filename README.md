@@ -15,7 +15,7 @@
     JOIN user
     WHERE user.user_id = 1
 
-[![Схема базы данных](https://github.com/AlekseySamoshin/java-filmorate/blob/main/Filmorate_database%20-%20Frame%201.jpg "Схема базы данных")](https://github.com/AlekseySamoshin/java-filmorate/blob/main/Filmorate_database%20-%20Frame%201.jpg "Схема базы данных")
+[![Схема базы данных](https://raw.githubusercontent.com/AlekseySamoshin/java-filmorate/add-database/Filmorate_database%20-%20Frame%201.jpg "Схема базы данных")](https://raw.githubusercontent.com/AlekseySamoshin/java-filmorate/add-database/Filmorate_database%20-%20Frame%201.jpg "Схема базы данных")
 
 ------------
 
