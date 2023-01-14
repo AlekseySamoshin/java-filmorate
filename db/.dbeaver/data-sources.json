@@ -1,0 +1,29 @@
+{
+	"folders": {},
+	"connections": {
+		"h2_embedded_v2-185af87aae4-7d05a78e1871c6b8": {
+			"provider": "h2",
+			"driver": "h2_embedded_v2",
+			"name": "filmorate.mv.db",
+			"save-password": true,
+			"configuration": {
+				"database": "/run/user/1000/doc/3b8d1f19/filmorate.mv.db",
+				"url": "jdbc:h2:/run/user/1000/doc/3b8d1f19/filmorate.mv.db",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"auth-model": "native"
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Разработка",
+			"color": "255,255,255",
+			"description": "База данных для разработки",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"auto-close-transactions": false
+		}
+	}
+}
