@@ -16,7 +16,7 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private Integer duration;
-    private List<User> likes;
+    private List<Integer> likes;
     private Set<Genre> genre;
     private RatingMpa rating;
 

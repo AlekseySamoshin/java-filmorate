@@ -1,0 +1,1 @@
+INSERT INTO users (USER_EMAIL, USER_LOGIN, USER_NAME, USER_BIRTHDAY) VALUES ('firstmail@mail.ru', 'superman3000', 'Sasha', '2017-11-21');

@@ -65,7 +65,7 @@ public class FilmService {
             log.warn(message);
             throw new NotFoundException(message);
         }
-        getFilmById(id).getLikes().add(userService.getUserById(userId));
+        getFilmById(id).getLikes().add(userId);
     }
 
     public void removeLike(int id, int userId) {
@@ -82,7 +82,7 @@ public class FilmService {
         getFilmById(id).getLikes().remove(userService.getUserById(userId));
     }
 
-    public List<User> getLikes(int id) {
+    public List<Integer> getLikes(int id) {
         if (!filmStorage.getFilms().containsKey(id) || filmStorage.getFilms().isEmpty()) {
             String message = "Фильм с id " + id + " не найден";
             log.warn(message);
