@@ -3,8 +3,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -16,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -44,7 +43,6 @@ public class DbUserStorage implements UserStorage {
         return user;
     }
 
-
     @Override
     public User deleteUser(User user) {
         String sqlQuery = String.format("DELETE FROM users WHERE user_id='%s';", user.getId());
@@ -64,6 +62,7 @@ public class DbUserStorage implements UserStorage {
                 user.getEmail(), user.getLogin(), user.getName(), user.getBirthday().toString(), user.getId()
         );
         jdbcTemplate.update(sqlQuery);
+        synchronizeFriends(user);
         return user;
     }
 
@@ -73,6 +72,7 @@ public class DbUserStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM PUBLIC.users");
         while (userRows.next()) {
             User user = mapUser(userRows);
+            user.setFriends(findFriendsByUserId(user.getId()));
             foundUsers.put(user.getId(), user);
         }
         return foundUsers;
@@ -87,6 +87,7 @@ public class DbUserStorage implements UserStorage {
         } else {
             throw new NotFoundException("Пользователь с id " + id + "не найден");
         }
+        user.setFriends(findFriendsByUserId(user.getId()));
         return user;
     }
 
@@ -95,20 +96,50 @@ public class DbUserStorage implements UserStorage {
         String sqlQuery = String.format("SELECT friend_id FROM FRIENDS f WHERE user_id = %d;", userId);
         SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(sqlQuery);
         while (friendsRows.next()) {
-            friends.add(Integer.parseInt(friendsRows.getString("FRIEND_ID")));
+            friends.add(Integer.parseInt(friendsRows.getString("friend_id")));
         }
         return friends;
     }
 
-    private void addFriendsToUser(User user) {
-        if (!user.getFriends().isEmpty()) {
-            StringBuilder sqlQuery = new StringBuilder();
-            for (Integer friendId : user.getFriends()) {
-                sqlQuery = sqlQuery.append(
-                        String.format("INSERT INTO friends (user_id, friend_id) VALUES ( %d, %d); ", user.getId(), friendId)
-                );
+    private void addFriendsOfUserToDb(User user, Integer friendId) {
+        String sqlQuery = String.format("INSERT INTO friends (user_id, friend_id) VALUES (%d, %d); ", user.getId(), friendId);
+        try {
+            jdbcTemplate.execute(sqlQuery);
+        } catch (DataAccessException e) {
+            log.warn("Ошибка добавления пользователя id=" + friendId + " в друзья к пользователю id=" + user.getId());
+        }
+    }
+
+    private void deleteFriendsFromDb(User user, Integer friendId) {
+        System.out.println(user.getFriends());
+        String sqlQuery = String.format("DELETE FROM friends WHERE user_id = %d AND friend_id = %d;", user.getId(), friendId);
+        try {
+            jdbcTemplate.execute(sqlQuery);
+        } catch (DataAccessException e) {
+            log.warn("Ошибка удаления пользователя id=" + friendId + " из друзей пользователя id=" + user.getId());
+        }
+    }
+
+    private void synchronizeFriends(User user) {
+        Set<Integer> dbFriends = findFriendsByUserId(user.getId());
+        Set<Integer> newFriends = user.getFriends();
+        Set<Integer> toRemove = new HashSet<>();
+        Set<Integer> toAdd = new HashSet<>();
+        for (Integer dbFriendId : dbFriends) {
+            if (!newFriends.contains(dbFriendId)) {
+                toRemove.add(dbFriendId);
             }
-            SqlRowSet friendsRows = jdbcTemplate.queryForRowSet(sqlQuery.toString());
+        }
+        for (Integer newFriendId : newFriends) {
+            if (!dbFriends.contains(newFriendId)) {
+                toAdd.add(newFriendId);
+            }
+        }
+        for (Integer friendId : toRemove) {
+            deleteFriendsFromDb(user, friendId);
+        }
+        for (Integer friendId : toAdd) {
+            addFriendsOfUserToDb(user, friendId);
         }
     }
 
@@ -122,6 +153,4 @@ public class DbUserStorage implements UserStorage {
         user.setFriends(findFriendsByUserId(user.getId()));
         return user;
     }
-
-
 }

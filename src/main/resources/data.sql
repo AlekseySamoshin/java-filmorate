@@ -1,1 +1,5 @@
-INSERT INTO users (USER_EMAIL, USER_LOGIN, USER_NAME, USER_BIRTHDAY) VALUES ('firstmail@mail.ru', 'superman3000', 'Sasha', '2017-11-21');
+INSERT INTO rating (rating_id, rating_name) VALUES (1, 'G');
+INSERT INTO rating (rating_id, rating_name) VALUES (2, 'PG');
+INSERT INTO rating (rating_id, rating_name) VALUES (3, 'PG-13');
+INSERT INTO rating (rating_id, rating_name) VALUES (4, 'R');
+INSERT INTO rating (rating_id, rating_name) VALUES (5, 'NC-17');

@@ -11,14 +11,14 @@ import java.util.Set;
 @Getter
 @Setter
 public class Film {
-    private Integer id;
+    private java.lang.Integer id;
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private Integer duration;
-    private List<Integer> likes;
+    private java.lang.Integer duration;
+    private List<java.lang.Integer> likes;
     private Set<Genre> genre;
-    private RatingMpa rating;
+    private Integer mpa;
 
     public Film() {
         likes = new ArrayList<>();

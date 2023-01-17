@@ -8,8 +8,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
@@ -28,17 +26,17 @@ public class DbFilmStorage implements FilmStorage {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         String sql = "INSERT INTO films (" +
                 "FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID" +
-                ") VALUES (?, ?, ?, ?)";
+                ") VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(connection -> {
             PreparedStatement statement = connection.prepareStatement(sql, new String[]{"film_id"});
             statement.setString(1, film.getName());
             statement.setString(2, film.getDescription());
             statement.setString(3, film.getReleaseDate().toString());
             statement.setString(4, film.getDuration().toString());
-            statement.setString(5, film.getRating().toString());
+            statement.setString(5, film.getMpa().toString());
             return statement;
         }, keyHolder);
-        film.setId((Integer) keyHolder.getKey());
+        film.setId((java.lang.Integer) keyHolder.getKey());
         return film;
     }
 
@@ -66,8 +64,8 @@ public class DbFilmStorage implements FilmStorage {
     }
 
     @Override
-    public HashMap<Integer, Film> getFilms() {
-        HashMap<Integer, Film> foundFilms = new HashMap<>();
+    public HashMap<java.lang.Integer, Film> getFilms() {
+        HashMap<java.lang.Integer, Film> foundFilms = new HashMap<>();
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
                 "SELECT * FROM PUBLIC.films f JOIN PUBLIC.rating r ON f.RATING_ID = r.RATING_ID"
         );
@@ -82,18 +80,18 @@ public class DbFilmStorage implements FilmStorage {
 
     private Film mapFilm(SqlRowSet filmRows) {
         Film film = new Film();
-        film.setId(Integer.parseInt(filmRows.getString("FILM_ID")));
+        film.setId(java.lang.Integer.parseInt(filmRows.getString("FILM_ID")));
         film.setName(filmRows.getString("FILM_NAME"));
         film.setDescription(filmRows.getString("DESCRIPTION"));
         film.setReleaseDate(LocalDate.from(LocalDate.parse(filmRows.getString("RELEASE_DATE"))));
-        film.setDuration(Integer.parseInt(filmRows.getString("DURATION")));
-        film.setRating(RatingMpa.valueOf(filmRows.getString("RATING_NAME")));
+        film.setDuration(java.lang.Integer.parseInt(filmRows.getString("DURATION")));
+        film.setMpa(Integer.valueOf(filmRows.getString("RATING_NAME")));
         film.setGenre(findGenresByFilmId(film.getId()));
         film.setLikes(findLikesByFilmId(film.getId()));
         return film;
     }
 
-    private Set<Genre> findGenresByFilmId(Integer filmId) {
+    private Set<Genre> findGenresByFilmId(java.lang.Integer filmId) {
         Set<Genre> genres = new HashSet<>();
         String sqlQuery = String.format(
                 "SELECT genre_id FROM films_genres f " +
@@ -107,8 +105,8 @@ public class DbFilmStorage implements FilmStorage {
         return genres;
     }
 
-    private List<Integer> findLikesByFilmId(Integer id) {
-        List<Integer> likes = new ArrayList<>();
+    private List<java.lang.Integer> findLikesByFilmId(java.lang.Integer id) {
+        List<java.lang.Integer> likes = new ArrayList<>();
         String sqlQuery = String.format("SELECT user_id FROM likes WHERE film_id = %d;", id);
         SqlRowSet genresRows = jdbcTemplate.queryForRowSet(sqlQuery);
         while (genresRows.next()) {

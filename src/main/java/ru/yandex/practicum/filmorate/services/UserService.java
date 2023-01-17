@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
@@ -31,7 +32,7 @@ public class UserService {
     public User updateUser(User user) {
         if (!getUsers().containsKey(user.getId())) {
             String message = "Пользователь с id " + user.getId() + " не найден";
-            log.warn(message);
+            log.warn(message + "id=" + user.getId());
             throw new NotFoundException(message);
         }
         userStorage.updateUser(user);
@@ -42,60 +43,68 @@ public class UserService {
         return userStorage.getUsers();
     }
 
-    public User getUserById(int id) {
-        if (!userStorage.getUsers().containsKey(id)) {
+    public User getUserById(Integer id) {
+        Map<Integer, User> users = userStorage.getUsers();
+        if (!users.containsKey(id)) {
             String message = "Пользователь с id " + id + " не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        return userStorage.getUsers().get(id);
+        return users.get(id);
     }
 
-    public void addFriend(int id, int friendId) {
-        if (!getUsers().containsKey(id) || !getUsers().containsKey(friendId)) {
+    public void addFriend(Integer id, Integer friendId) {
+        Map<Integer, User> users = getUsers();
+        if (!users.containsKey(id) || !users.containsKey(friendId)) {
             String message = "Пользователь не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        getUserById(id).getFriends().add(getUserById(friendId).getId());
-        getUserById(friendId).getFriends().add(getUserById(id).getId());
-        log.info("Пользователь id=" + friendId + " добавлен в друзья пользователю " + id);
+        User user = users.get(id);
+        user.getFriends().add(friendId);
+        log.info("Пользователь id=" + friendId + " добавлен в друзья пользователю id=" + id);
+        updateUser(user);
     }
 
-    public void deleteFriend(int id, int friendId) {
-        if (!getUsers().containsKey(id) || !getUsers().containsKey(friendId)) {
+    public void deleteFriend(Integer id, Integer friendId) {
+        Map<Integer, User> users = getUsers();
+        if (!users.containsKey(id) || !users.containsKey(friendId)) {
             String message = "Пользователь с id " + id + " не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        if(!getFriends(id).contains(getUserById(friendId))) {
+        User user = users.get(id);
+        if(!user.getFriends().contains(friendId)) {
             String message = "Пользователь id=" + friendId + " не найден среди друзей пользователя id=" + id;
             log.warn(message);
             throw new NotFoundException(message);
         }
-        getUserById(id).getFriends().remove(getUserById(friendId));
-        getUserById(friendId).getFriends().remove(getUserById(id));
+        user.getFriends().remove(friendId);
+        updateUser(user);
     }
 
-    public List<User> getFriends(int id) {
-        if (!userStorage.getUsers().containsKey(id) || userStorage.getUsers().isEmpty()) {
+    public List<User> getFriends(Integer id) {
+        Map<Integer, User> users = getUsers();
+        if (!users.containsKey(id) || users.isEmpty()) {
             String message = "Пользователь с id " + id + " не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        return getUserById(id).getFriends().stream()
-                .map((userId) -> getUserById(userId))
+        return users.get(id).getFriends().stream()
+                .map((userId) -> users.get(userId))
                 .collect(Collectors.toList());
     }
 
-    public List<User> getCommonFriends(int id, int otherId) {
-        if (!getUsers().containsKey(id) || !getUsers().containsKey(otherId)) {
+    public List<User> getCommonFriends(Integer id, Integer otherId) {
+        Map<Integer, User> users = getUsers();
+        if (!users.containsKey(id) || !users.containsKey(otherId)) {
             String message = "Пользователь с id " + id + " не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        return getFriends(id).stream()
-                .filter(getFriends(otherId) :: contains)
+        return users.get(id).getFriends().stream()
+                .filter(users.get(otherId).getFriends() :: contains)
+                .map((userId) -> users.get(userId))
                 .collect(Collectors.toList());
     }
 
