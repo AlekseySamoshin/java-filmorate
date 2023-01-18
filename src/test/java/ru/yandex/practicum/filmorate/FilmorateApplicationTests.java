@@ -47,52 +47,52 @@ class FilmorateApplicationTests {
 	private Film film2 = new Film();
 	private Film film3 = new Film();
 
-	@BeforeEach
-	public void setData() {
-		user1.setEmail("email@mail.ru");
-		user1.setLogin("superman");
-		user1.setName("Ivan");
-		user1.setBirthday(LocalDate.parse("2016-11-10"));
-
-		user2.setEmail("oldstar@rambler.ru");
-		user2.setLogin("superstar");
-		user2.setName("Efim");
-		user2.setBirthday(LocalDate.parse("1987-08-06"));
-
-		user3.setEmail("cheburashka@zoo.ru");
-		user3.setLogin("cheburator");
-		user3.setName("Cheburashka");
-		user3.setBirthday(LocalDate.parse("1969-08-20"));
-
-		Mpa mpa = new Mpa();
-		mpa.setId(1);
-
-		film1.setName("Безудержное веселье");
-		film1.setDescription("мимолетная комедия");
-		film1.setReleaseDate(LocalDate.parse("2020-02-22"));
-		film1.setDuration(120);
-		film1.setMpa(mpa);
-
-		film2.setName("Котастрофа");
-		film2.setDescription("рыжий триллер");
-		film2.setReleaseDate(LocalDate.parse("2022-06-18"));
-		film2.setDuration(120);
-		film2.setMpa(mpa);
-
-		film3.setName("Красная синева");
-		film3.setDescription("Закат синел бордовым в гранатовой лазури аквамарина");
-		film3.setReleaseDate(LocalDate.parse("2016-08-16"));
-		film3.setDuration(122);
-		film3.setMpa(mpa);
-
-		userStorage.addUser(user1);
-		userStorage.addUser(user2);
-		userStorage.addUser(user3);
-
-		filmStorage.addFilm(film1);
-		filmStorage.addFilm(film2);
-		filmStorage.addFilm(film3);
-	}
+//	@BeforeEach
+//	public void setData() {
+//		user1.setEmail("email@mail.ru");
+//		user1.setLogin("superman");
+//		user1.setName("Ivan");
+//		user1.setBirthday(LocalDate.parse("2016-11-10"));
+//
+//		user2.setEmail("oldstar@rambler.ru");
+//		user2.setLogin("superstar");
+//		user2.setName("Efim");
+//		user2.setBirthday(LocalDate.parse("1987-08-06"));
+//
+//		user3.setEmail("cheburashka@zoo.ru");
+//		user3.setLogin("cheburator");
+//		user3.setName("Cheburashka");
+//		user3.setBirthday(LocalDate.parse("1969-08-20"));
+//
+//		Mpa mpa = new Mpa();
+//		mpa.setId(1);
+//
+//		film1.setName("Безудержное веселье");
+//		film1.setDescription("мимолетная комедия");
+//		film1.setReleaseDate(LocalDate.parse("2020-02-22"));
+//		film1.setDuration(120);
+//		film1.setMpa(mpa);
+//
+//		film2.setName("Котастрофа");
+//		film2.setDescription("рыжий триллер");
+//		film2.setReleaseDate(LocalDate.parse("2022-06-18"));
+//		film2.setDuration(120);
+//		film2.setMpa(mpa);
+//
+//		film3.setName("Красная синева");
+//		film3.setDescription("Закат синел бордовым в гранатовой лазури аквамарина");
+//		film3.setReleaseDate(LocalDate.parse("2016-08-16"));
+//		film3.setDuration(122);
+//		film3.setMpa(mpa);
+//
+//		userStorage.addUser(user1);
+//		userStorage.addUser(user2);
+//		userStorage.addUser(user3);
+//
+//		filmStorage.addFilm(film1);
+//		filmStorage.addFilm(film2);
+//		filmStorage.addFilm(film3);
+//	}
 
 	@Test
 	public void testFindUserById() {
@@ -135,11 +135,14 @@ class FilmorateApplicationTests {
 	}
 	@Test
 	public void testAddFilm() {
+		Mpa mpa = new Mpa();
+		mpa.setId(1);
 		Film film = new Film();
 		film.setName("Невероятные приключения студентов на практикуме");
 		film.setDescription("о-хо-хо-о-ох..");
 		film.setReleaseDate(LocalDate.parse("2023-01-18"));
 		film.setDuration(1024);
+		film.setMpa(mpa);
 
 		Optional<Film> filmOptional = Optional.ofNullable(filmStorage.addFilm(film));
 		assertThat(filmOptional)
@@ -149,7 +152,7 @@ class FilmorateApplicationTests {
 		assertThat(filmOptional)
 				.isPresent()
 				.hasValueSatisfying(userBirthday -> assertThat(film)
-						.hasFieldOrPropertyWithValue("birthday", LocalDate.of(2023, 01, 18)));
+						.hasFieldOrPropertyWithValue("releaseDate", LocalDate.of(2023, 01, 18)));
 	}
 
 	@Test
