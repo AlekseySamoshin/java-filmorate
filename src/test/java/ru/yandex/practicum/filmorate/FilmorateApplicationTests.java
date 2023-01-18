@@ -133,7 +133,7 @@ class FilmorateApplicationTests {
 				.hasValueSatisfying(userBirthday -> assertThat(user)
 						.hasFieldOrPropertyWithValue("birthday", LocalDate.of(2007, 7, 7)));
 	}
-
+	@Test
 	public void testAddFilm() {
 		Film film = new Film();
 		film.setName("Невероятные приключения студентов на практикуме");
