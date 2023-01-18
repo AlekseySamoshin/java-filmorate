@@ -12,13 +12,13 @@ import java.util.Set;
 @Getter
 @Setter
 public class Film {
-    private java.lang.Integer id;
+    private Integer id;
     private String name;
     private String description;
     private LocalDate releaseDate;
-    private java.lang.Integer duration;
-    private List<java.lang.Integer> likes;
-    private Set<Integer> genres;
+    private Integer duration;
+    private List<Integer> likes;
+    private Set<Genre> genres;
     private Mpa mpa;
 
     public Film() {

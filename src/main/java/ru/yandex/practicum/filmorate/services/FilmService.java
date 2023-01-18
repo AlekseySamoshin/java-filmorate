@@ -10,9 +10,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,20 +39,6 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-
-//    public User updateUser(User user) {
-//        if (!getUsers().containsKey(user.getId())) {
-//            String message = "Пользователь с id " + user.getId() + " не найден";
-//            log.warn(message + "id=" + user.getId());
-//            throw new NotFoundException(message);
-//        }
-//        userStorage.updateUser(user);
-//        return user;
-//    }
-
-
-
-
     public HashMap<Integer, Film> getFilms() {
         return filmStorage.getFilms();
     }
@@ -68,32 +52,45 @@ public class FilmService {
         return filmStorage.getFilms().get(id);
     }
 
-    public void addLike(int id, int userId){
-        if (!userService.getUsers().containsKey(userId)) {
-            String message = "Пользователь с id " + id + " не найден";
+    public void addLike(int filmId, int userId){
+        Map<Integer, Film> films = getFilms();
+        Map<Integer, User> users = userService.getUsers();
+        if (!users.containsKey(userId)) {
+            String message = "Пользователь с id " + userId + " не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        if (!filmStorage.getFilms().containsKey(id)) {
-            String message = "Фильм с id " + id + " не найден";
+        if (!films.containsKey(filmId)) {
+            String message = "Фильм с id " + filmId + " не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        getFilmById(id).getLikes().add(userId);
+        Film film = films.get(filmId);
+        if (!film.getLikes().contains(userId)) {
+            film.getLikes().add(userId);
+        }
+        updateFilm(film);
     }
 
-    public void removeLike(int id, int userId) {
-        if (!userService.getUsers().containsKey(userId)) {
-            String message = "Пользователь с id " + id + " не найден";
+    public void removeLike(int filmId, int userId) {
+        Map<Integer, Film> films = getFilms();
+        Map<Integer, User> users = userService.getUsers();
+        if (!users.containsKey(userId)) {
+            String message = "Пользователь с id " + userId + " не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        if (!filmStorage.getFilms().containsKey(id)) {
-            String message = "Фильм с id " + id + " не найден";
+        if (!films.containsKey(filmId)) {
+            String message = "Фильм с id " + filmId + " не найден";
             log.warn(message);
             throw new NotFoundException(message);
         }
-        getFilmById(id).getLikes().remove(userService.getUserById(userId));
+
+        Film film = films.get(userId);
+        if (film.getLikes().contains(userId)) {
+            film.getLikes().remove((Integer)userId);
+        }
+        updateFilm(films.get(userId));
     }
 
     public List<Integer> getLikes(int id) {
@@ -119,7 +116,6 @@ public class FilmService {
         if (film.getDescription().length() > 200) message.append("Слишком длинное описание! ");
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) message.append("Некорректрая дата выхода! ");
         if (film.getDuration() < 0) message.append("Длительность фильма не может быть меньше 0! ");
-//        if (film.getGenre() == null) message.append("Не указан жанр! ");
         if (!message.toString().isBlank()) {
             log.warn("Ошибка валидации данных фильма: " + message.toString());
             throw new WrongDataException(message.toString());
