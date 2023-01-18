@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,11 +18,12 @@ public class Film {
     private LocalDate releaseDate;
     private java.lang.Integer duration;
     private List<java.lang.Integer> likes;
-    private Set<Genre> genre;
-    private Integer mpa;
+    private Set<Integer> genres;
+    private Mpa mpa;
 
     public Film() {
         likes = new ArrayList<>();
+        genres = new HashSet<>();
     }
 
     @Override

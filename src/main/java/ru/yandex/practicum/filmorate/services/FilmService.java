@@ -41,6 +41,20 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
+
+//    public User updateUser(User user) {
+//        if (!getUsers().containsKey(user.getId())) {
+//            String message = "Пользователь с id " + user.getId() + " не найден";
+//            log.warn(message + "id=" + user.getId());
+//            throw new NotFoundException(message);
+//        }
+//        userStorage.updateUser(user);
+//        return user;
+//    }
+
+
+
+
     public HashMap<Integer, Film> getFilms() {
         return filmStorage.getFilms();
     }
@@ -105,6 +119,7 @@ public class FilmService {
         if (film.getDescription().length() > 200) message.append("Слишком длинное описание! ");
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) message.append("Некорректрая дата выхода! ");
         if (film.getDuration() < 0) message.append("Длительность фильма не может быть меньше 0! ");
+//        if (film.getGenre() == null) message.append("Не указан жанр! ");
         if (!message.toString().isBlank()) {
             log.warn("Ошибка валидации данных фильма: " + message.toString());
             throw new WrongDataException(message.toString());
