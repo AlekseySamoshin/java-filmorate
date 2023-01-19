@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class DbGenreStorage {
-    Logger log = LoggerFactory.getLogger(DbFilmStorage.class);
-    private JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    private final JdbcTemplate jdbcTemplate;
 
     public DbGenreStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

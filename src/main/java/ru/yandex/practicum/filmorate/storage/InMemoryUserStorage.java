@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.HashMap;
 
 @Component
-//@Primary
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
 

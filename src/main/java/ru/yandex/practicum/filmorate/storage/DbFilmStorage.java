@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Primary;
@@ -19,11 +20,11 @@ import java.util.*;
 
 @Component
 @Primary
+@Slf4j
 public class DbFilmStorage implements FilmStorage {
-    Logger log = LoggerFactory.getLogger(DbFilmStorage.class);
-    private JdbcTemplate jdbcTemplate;
-    private DbMpaStorage mpaStorage;
-    private DbGenreStorage genreStorage;
+    private final JdbcTemplate jdbcTemplate;
+    private final DbMpaStorage mpaStorage;
+    private final DbGenreStorage genreStorage;
 
     public DbFilmStorage(JdbcTemplate jdbcTemplate, DbMpaStorage mpaStorage, DbGenreStorage genreStorage) {
         this.jdbcTemplate = jdbcTemplate;
@@ -82,7 +83,7 @@ public class DbFilmStorage implements FilmStorage {
         HashMap<Integer, Film> foundFilms = new HashMap<>();
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
                 "SELECT * FROM films f " +
-                        "JOIN rating r ON f.RATING_ID = r.RATING_ID " // "JOIN films_genres fg ON f.film_id = fg.film_id"
+                        "JOIN rating r ON f.RATING_ID = r.RATING_ID"
         );
         while (filmRows.next()) {
             Film film = mapFilm(filmRows);
@@ -114,7 +115,6 @@ public class DbFilmStorage implements FilmStorage {
         );
         SqlRowSet genresRows = jdbcTemplate.queryForRowSet(sqlQuery);
         genresRows.beforeFirst();
-        //genresRows.first();
         while (genresRows.next()) {
             genres.add(genreStorage.mapGenre(genresRows));
         }

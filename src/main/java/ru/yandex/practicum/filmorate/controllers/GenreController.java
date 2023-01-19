@@ -15,7 +15,7 @@ import java.util.Collection;
 @RestController
 @Slf4j
 public class GenreController {
-    GenreService genreService;
+    private final GenreService genreService;
 
     @Autowired
     public GenreController(GenreService genreService) {

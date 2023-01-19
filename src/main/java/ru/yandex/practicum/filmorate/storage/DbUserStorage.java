@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataAccessException;
@@ -20,9 +19,9 @@ import java.util.Set;
 
 @Component
 @Primary
+@Slf4j
 public class DbUserStorage implements UserStorage {
-    Logger log = LoggerFactory.getLogger(DbUserStorage.class);
-    private JdbcTemplate jdbcTemplate = new JdbcTemplate();
+    private final JdbcTemplate jdbcTemplate;
     public DbUserStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -72,14 +71,13 @@ public class DbUserStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM PUBLIC.users");
         while (userRows.next()) {
             User user = mapUser(userRows);
-            user.setFriends(findFriendsByUserId(user.getId()));
             foundUsers.put(user.getId(), user);
         }
-        return foundUsers;
+        return findFriendsByManyUserIds(foundUsers);
     }
 
     public User findUserById(Integer id) {
-        User user = null;
+        User user;
         String sqlQuery = String.format("SELECT * FROM PUBLIC.users WHERE user_id = %d", id);
         SqlRowSet userRows = jdbcTemplate.queryForRowSet(sqlQuery);
         if (userRows.next()) {
@@ -99,6 +97,29 @@ public class DbUserStorage implements UserStorage {
             friends.add(Integer.parseInt(friendsRows.getString("friend_id")));
         }
         return friends;
+    }
+
+    private HashMap<Integer, User> findFriendsByManyUserIds(HashMap<Integer, User> users) {
+        StringBuilder sqlQuery = new StringBuilder();
+        sqlQuery.append(
+                "SELECT f.user_id, f.friend_id FROM users u " +
+                "JOIN friends f ON f.user_id = u.user_id "+
+                "WHERE f.user_id IN ("
+        );
+        String prefix = "";
+        for (Integer id : users.keySet()) {
+            sqlQuery.append(prefix);
+            sqlQuery.append(id);
+            prefix = ", ";
+        }
+        sqlQuery.append(");");
+        SqlRowSet usersFriendsRows = jdbcTemplate.queryForRowSet(sqlQuery.toString());
+        while (usersFriendsRows.next()) {
+            Integer userId = Integer.parseInt(usersFriendsRows.getString("user_id"));
+            Integer friendId = Integer.parseInt(usersFriendsRows.getString("friend_id"));
+            users.get(userId).getFriends().add(friendId);
+        }
+        return users;
     }
 
     private void addFriendsOfUserToDb(User user, Integer friendId) {
