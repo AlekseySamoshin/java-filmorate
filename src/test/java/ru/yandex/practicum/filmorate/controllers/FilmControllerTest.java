@@ -1,19 +1,21 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import org.apache.logging.slf4j.SLF4JLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.services.FilmService;
 import ru.yandex.practicum.filmorate.services.UserService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 class FilmControllerTest {
 
@@ -23,10 +25,11 @@ class FilmControllerTest {
     Film film1;
     Film film2;
     Film wrongFilm;
+    Logger logger = mock(Logger.class);
 
     @BeforeEach
     void prepare() {
-        filmController = new FilmController(new FilmService(new InMemoryFilmStorage(), new UserService(new InMemoryUserStorage())));
+        filmController = new FilmController(new FilmService(new InMemoryFilmStorage(logger), new UserService(new InMemoryUserStorage())), logger);
         films = new HashMap<>();
         generatedId = 0;
         film1 = new Film();

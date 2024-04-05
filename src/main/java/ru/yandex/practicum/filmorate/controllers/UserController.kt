@@ -1,72 +1,70 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.controllers
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.services.UserService;
-
-import java.util.Collection;
+import lombok.extern.slf4j.Slf4j
+import org.apache.logging.slf4j.SLF4JLogger
+import org.slf4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.*
+import ru.yandex.practicum.filmorate.model.User
+import ru.yandex.practicum.filmorate.services.UserService
 
 @RestController
 @Slf4j
-public class UserController {
-
-    private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
+class UserController @Autowired constructor(
+    private val userService: UserService,
+    private val logger: Logger
+) {
     @PostMapping("/users")
-    public User addUser(@RequestBody User user) {
-        log.info("Получен запрос на добавление пользователя.");
-        userService.validate(user);
-        user = userService.addUser(user);
-        log.info("Добавлен пользователь " + user.toString());
-        return user;
+    fun addUser(@RequestBody user: User): User {
+        var user = user
+        logger.info("Получен запрос на добавление пользователя.")
+        userService.validate(user)
+        user = userService.addUser(user)
+        logger.info("Добавлен пользователь $user")
+        return user
     }
 
     @PutMapping("/users")
-    public User updateUser(@RequestBody User user) {
-        log.info("Получен запрос на обновление данных пользователя.");
-        userService.validate(user);
-        user = userService.updateUser(user);
-        log.info("Обновлены данные пользователя " + user.toString());
-        return user;
+    fun updateUser(@RequestBody user: User): User {
+        var user = user
+        logger.info("Получен запрос на обновление данных пользователя.")
+        userService.validate(user)
+        user = userService.updateUser(user)
+        logger.info("Обновлены данные пользователя $user")
+        return user
     }
 
-    @GetMapping("/users")
-    public Collection<User> getUsers() {
-        log.info("Получен запрос на получение списка пользователей");
-        return userService.getUsers().values();
-    }
+    @get:GetMapping("/users")
+    val users: Collection<User>
+        get() {
+            logger.info("Получен запрос на получение списка пользователей")
+            return userService.users.values
+        }
 
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable int id) {
-        log.info("Получен запрос на получение пользователя");
-        return userService.getUserById(id);
+    fun getUser(@PathVariable id: Int): User {
+        logger.info("Получен запрос на получение пользователя")
+        return userService.getUserById(id)
     }
 
     @GetMapping("/users/{id}/friends")
-    public Collection<User> getFriends(@PathVariable int id) {
-        return userService.getFriends(id);
+    fun getFriends(@PathVariable id: Int): Collection<User> {
+        return userService.getFriends(id)
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
-    public Collection<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
-        return userService.getCommonFriends(id, otherId);
+    fun getCommonFriends(@PathVariable id: Int, @PathVariable otherId: Int): Collection<User> {
+        return userService.getCommonFriends(id, otherId)
     }
 
     @PutMapping("/users/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
-        userService.addFriend(id, friendId);
+    fun addFriend(@PathVariable id: Int, @PathVariable friendId: Int) {
+        userService.addFriend(id, friendId)
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
-    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
-        userService.deleteFriend(id, friendId);
+    fun deleteFriend(@PathVariable id: Int, @PathVariable friendId: Int) {
+        userService.deleteFriend(id, friendId)
     }
 }
 

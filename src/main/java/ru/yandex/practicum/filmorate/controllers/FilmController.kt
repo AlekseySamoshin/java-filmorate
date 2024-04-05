@@ -1,63 +1,61 @@
-package ru.yandex.practicum.filmorate.controllers;
+package ru.yandex.practicum.filmorate.controllers
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.services.FilmService;
-
-import java.util.Collection;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j
+import org.apache.logging.slf4j.SLF4JLogger
+import org.slf4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.*
+import ru.yandex.practicum.filmorate.model.Film
+import ru.yandex.practicum.filmorate.services.FilmService
 
 @RestController
 @Slf4j
-public class FilmController {
-    private final FilmService filmService;
-
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
-    @GetMapping("/films")
-    public Collection<Film> getFilms(){
-        log.info("Получен запрос на получение списка фильмов");
-        return filmService.getFilms().values();
-    }
+class FilmController @Autowired constructor(
+    private val filmService: FilmService,
+    private val logger: Logger
+) {
+    @get:GetMapping("/films")
+    val films: Collection<Film>
+        get() {
+            logger.info("Получен запрос на получение списка фильмов")
+            return filmService.films.values
+        }
 
     @GetMapping("/films/{id}")
-    public Film getFilm(@PathVariable int id){
-        log.info("Получен запрос на получение фильма");
-        return filmService.getFilmById(id);
+    fun getFilm(@PathVariable id: Int): Film {
+        logger.info("Получен запрос на получение фильма")
+        return filmService.getFilmById(id)
     }
 
     @GetMapping("/films/popular")
-    public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "0") int count) {
-        return filmService.getMostPopular(count);
+    fun getMostPopularFilms(@RequestParam(defaultValue = "0") count: Int): List<Film> {
+        return filmService.getMostPopular(count)
     }
 
     @PostMapping("/films")
-    public Film addFilm(@RequestBody Film film) {
-        log.info("Получен запрос на добавление фильма.");
-        film = filmService.addFilm(film);
-        log.info("Добавлен фильм " + film.toString());
-        return film;
+    fun addFilm(@RequestBody film: Film): Film {
+        var addedFilm = film
+        logger.info("Получен запрос на добавление фильма.")
+        addedFilm = filmService.addFilm(addedFilm)
+        logger.info("Добавлен фильм $addedFilm")
+        return addedFilm
     }
 
     @PutMapping("/films")
-    public Film updateFilm(@RequestBody Film film) {
-        log.info("Получен запрос на обновление данных фильма.");
-        film = filmService.updateFilm(film);
-        return film;
+    fun updateFilm(@RequestBody film: Film?): Film? {
+        var addedFilm = film
+        logger.info("Получен запрос на обновление данных фильма.")
+        addedFilm = filmService.updateFilm(addedFilm)
+        return addedFilm
     }
 
     @PutMapping("/films/{id}/like/{userId}")
-    public void addLike(@PathVariable int id, @PathVariable int userId) {
-        filmService.addLike(id, userId);
+    fun addLike(@PathVariable id: Int, @PathVariable userId: Int) {
+        filmService.addLike(id, userId)
     }
 
     @DeleteMapping("/films/{id}/like/{userId}")
-    public void removeLike(@PathVariable int id, @PathVariable int userId) {
-        filmService.removeLike(id, userId);
+    fun removeLike(@PathVariable id: Int, @PathVariable userId: Int) {
+        filmService.removeLike(id, userId)
     }
 }

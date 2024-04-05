@@ -1,36 +1,25 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.model
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Getter
+import lombok.Setter
+import java.time.LocalDate
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+class Film {
+    var id: Int? = null
+    var name: String? = null
+    var description: String? = null
+    var releaseDate: LocalDate? = null
+    var duration: Int? = null
+    var likes: List<User> = ArrayList()
+    var genre: Set<Genre>? = null
+    var rating: RatingMpa? = null
 
-@Getter
-@Setter
-public class Film {
-    private Integer id;
-    private String name;
-    private String description;
-    private LocalDate releaseDate;
-    private Integer duration;
-    private List<User> likes;
-    private Set<Genre> genre;
-    private RatingMpa rating;
-
-    public Film() {
-        likes = new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return "Film{id=" + id
+    override fun toString(): String {
+        return ("Film{id=" + id
                 + ", name=" + name
-                + ", release=" +  releaseDate
+                + ", release=" + releaseDate
                 + ", duration=" + duration + " мин."
                 + ", descr.=" + description
-                + "}";
+                + "}")
     }
 }

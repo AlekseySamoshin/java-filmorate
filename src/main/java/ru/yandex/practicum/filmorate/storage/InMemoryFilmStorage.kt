@@ -1,48 +1,46 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
-import ru.yandex.practicum.filmorate.model.Film;
-
-import java.util.HashMap;
+import lombok.extern.slf4j.Slf4j
+import org.apache.logging.slf4j.SLF4JLogger
+import org.slf4j.Logger
+import org.springframework.stereotype.Component
+import ru.yandex.practicum.filmorate.exceptions.WrongDataException
+import ru.yandex.practicum.filmorate.model.Film
 
 @Component
 @Slf4j
-public class InMemoryFilmStorage implements FilmStorage{
-    private final HashMap<Integer, Film> films = new HashMap<>();
-    private int generatedId;
+class InMemoryFilmStorage(
+    private val logger: Logger
+) : FilmStorage {
+    private val films = HashMap<Int, Film>()
+    private var generatedId = 0
 
-    @Override
-    public Film addFilm(Film film) {
-        if (film.getId() == null) film.setId(generateId());
-        films.put(film.getId(), film);
-        return film;
+    override fun addFilm(film: Film): Film {
+        if (film.id == null) film.id = generateId()
+        films[film.id!!] = film
+        return film
     }
 
-    @Override
-    public Film deleteFilm(Film film) {
-        films.remove(film.getId());
-        return film;
+    override fun deleteFilm(film: Film): Film {
+        films.remove(film.id)
+        return film
     }
 
-    @Override
-    public Film updateFilm(Film film) {
-        if (film.getId() == null || !films.containsKey(film.getId())) {
-            log.warn("Ошибка обновления данных фильма: неверный id" + film.toString());
-            throw new WrongDataException("Неверный id");
+    override fun updateFilm(film: Film): Film {
+        if (film.id == null || !films.containsKey(film.id)) {
+            logger.warn("Ошибка обновления данных фильма: неверный id$film")
+            throw WrongDataException("Неверный id")
         }
-        films.put(film.getId(), film);
-        log.info("Обновлены данные фильма " + film.toString());
-        return film;
+        films[film.id!!] = film
+        logger.info("Обновлены данные фильма $film")
+        return film
     }
 
-    @Override
-    public HashMap<Integer, Film> getFilms() {
-        return films;
+    override fun getFilms(): HashMap<Int, Film> {
+        return films
     }
 
-    private int generateId() {
-        return ++generatedId;
+    private fun generateId(): Int {
+        return ++generatedId
     }
 }

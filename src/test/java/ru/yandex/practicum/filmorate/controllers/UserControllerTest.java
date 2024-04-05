@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.controllers;
 
+import org.apache.logging.slf4j.SLF4JLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
 import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.services.UserService;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class UserControllerTest {
 
@@ -21,10 +24,11 @@ class UserControllerTest {
     User user1;
     User user2;
     User wrongUser;
+    Logger logger = mock(Logger.class);
 
     @BeforeEach
     void prepare() {
-        userController = new UserController(new UserService(new InMemoryUserStorage()));
+        userController = new UserController(new UserService(new InMemoryUserStorage()), logger);
         users = new HashMap<>();
         generatedId = 0;
         user1 = new User();
