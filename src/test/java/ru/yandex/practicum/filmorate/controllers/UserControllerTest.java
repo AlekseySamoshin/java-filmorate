@@ -28,7 +28,7 @@ class UserControllerTest {
 
     @BeforeEach
     void prepare() {
-        userController = new UserController(new UserService(new InMemoryUserStorage()), logger);
+        userController = new UserController(new UserService(new InMemoryUserStorage(logger)), logger);
         users = new HashMap<>();
         generatedId = 0;
         user1 = new User();

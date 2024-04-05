@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import org.apache.logging.slf4j.SLF4JLogger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ class FilmControllerTest {
 
     @BeforeEach
     void prepare() {
-        filmController = new FilmController(new FilmService(new InMemoryFilmStorage(logger), new UserService(new InMemoryUserStorage())), logger);
+        filmController = new FilmController(new FilmService(new InMemoryFilmStorage(logger), new UserService(new InMemoryUserStorage(logger))), logger);
         films = new HashMap<>();
         generatedId = 0;
         film1 = new Film();

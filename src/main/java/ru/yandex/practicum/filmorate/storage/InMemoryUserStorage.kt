@@ -1,49 +1,44 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exceptions.WrongDataException;
-import ru.yandex.practicum.filmorate.model.User;
-
-import java.util.HashMap;
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.Logger
+import org.springframework.stereotype.Component
+import ru.yandex.practicum.filmorate.exceptions.WrongDataException
+import ru.yandex.practicum.filmorate.model.User
 
 @Component
 @Slf4j
-public class InMemoryUserStorage implements UserStorage {
+class InMemoryUserStorage(
+    private val logger: Logger
+) : UserStorage {
+    private val users = HashMap<Int, User>()
+    private var generatedId = 0
 
-    private final HashMap<Integer, User> users = new HashMap<>();
-    private int generatedId;
-
-    @Override
-    public User addUser(User user) {
-        if (user.getId() == null) user.setId(generateId());
-        users.put(user.getId(), user);
-        return user;
+    override fun addUser(user: User): User {
+        if (user.id == null) user.id = generateId()
+        users[user.id!!] = user
+        return user
     }
 
-    @Override
-    public User deleteUser(User user) {
-        users.remove(user.getId());
-        return user;
+    override fun deleteUser(user: User): User {
+        users.remove(user.id)
+        return user
     }
 
-    @Override
-    public User updateUser(User user) {
-        if (user.getId() == null || !users.containsKey(user.getId())) {
-            log.warn("Ошибка обновления пользователя: неверный id" + user.toString());
-            throw new WrongDataException("Неверный id");
+    override fun updateUser(user: User): User {
+        if (user.id == null || !users.containsKey(user.id)) {
+            logger.warn("Ошибка обновления пользователя: неверный id$user")
+            throw WrongDataException("Неверный id")
         }
-        users.put(user.getId(), user);
-        return user;
+        users[user.id!!] = user
+        return user
     }
 
-    @Override
-    public HashMap<Integer, User> getUsers() {
-        return users;
+    override fun getUsers(): HashMap<Int, User> {
+        return users
     }
 
-    private int generateId() {
-        return ++generatedId;
+    private fun generateId(): Int {
+        return ++generatedId
     }
-
 }
